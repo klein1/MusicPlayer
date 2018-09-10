@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<title>随音浪</title>
+		<link rel="stylesheet" href="font/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/player.css?v=2" />
+		<link rel="stylesheet" href="css/akira.css" />
+		<style>
+			::-webkit-scrollbar {
+				display: none;
+			}
+			
+			html {
+				-webkit-tap-highlight-color: transparent;
+			}
+			
+			a {
+				text-decoration: none;
+			}
+			
+			.input__label--akira {
+				color: goldenrod;
+			}
+			
+			.input__label--akira::before {
+				background: grey;
+			}
+			
+			#music-list {
+				padding: 10px 0 10px 0;
+				list-style: none;
+			}
+			
+			#music-list li {
+				height: 17px;
+				width: auto;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				padding-left: 30px;
+				margin: 15px 0 15px 20px;
+				background: url(img/table.png) no-repeat;
+				background-position: 0 -103px;
+			}
+			
+			#music-list li.li-load,
+			#music-list li.li-complete {
+				margin-left: 0;
+				margin-top: 30px;
+				padding-left: 0;
+				text-align: center;
+				background: none;
+			}
+			
+			#music-list li a {
+				color: black;
+			}
+			
+			.list-content li {
+				position: relative;
+				padding-right: 40px !important;
+			}
+			
+			.delete-btn {
+				height: 41px;
+				width: 40px;
+				background: url(img/delete.jpg) no-repeat;
+				background-position: center;
+				background-size: 20px 20px;
+				position: absolute;
+				right: 10px;
+				top: 0;
+			}
+			
+			.paragraph {
+				margin: 20px 0;
+				height: 21px;
+			}
+			
+			.paragraph.active {
+				color: #01e5ff;
+			}
+			
+			.invisible {
+				visibility: hidden;
+			}
+			
+			.fa-comment,
+			.fa-download {
+				cursor: pointer;
+			}
+			
+			@media screen and (max-height: 480px) {
+				.tools{
+					display:none;
+				}
+			}
+		
+			@media screen and (min-height: 481px) and (max-height: 568px) {
+				#lyrics-part {
+					height: 345px;
+				}
+				
+				#play-part {
+					height: 370px;
+				}
+				
+				#search-board div:last-child{
+					height:300px !important;
+				}
+			}
+			
+			@media screen and (min-width:350px){
+				#lyrics-part {
+					height: 390px;
+				}
+				
+				#play-part {
+					height: 410px;
+				}
+				
+				#search-board div:last-child{
+					height:400px !important;
+				}
+			}
+			
+			@media screen and (min-height:730px){
+				#lyrics-part {
+					height: 460px;
+				}
+			}
+		</style>
+		<script src="js/jquery.js"></script>
+	</head>
+
+	<body>
+		<div class="wrapper">
+			<div id="bg" class="bg">
+				<div class="bg-cover"></div>
+			</div>
+			<div class="title" onclick="boardToggle()">
+				<div class="music-info">
+					<div class="song" id="songName"></div>
+					<div class="artist" id="artist"></div>
+				</div>
+
+				<!--<a href="javascript:boardToggle();" style="position:absolute;top:20px;right:20px;width:25px;height:25px;background: url(img/playbar.png) no-repeat;background-position: -3px -344px;"></a>-->
+			</div>
+			<div id="search-board">
+				<div style="position:fixed;top:90px;left:10%;width:80%;text-align: center;">
+					<span class="input input--akira">
+					<input class="input__field input__field--akira" type="text" name="keyword" value="" onchange="change(this)" autocomplete="off">
+					<label class="input__label input__label--akira">
+					<span style="font-size: 14px;padding:15px 0" class="input__label-content input__label-content--akira">搜索歌曲名</span>
+					</label>
+					</span>
+				</div>
+
+				<div style="position: fixed;top:160px;left:10%;width:80%;background-color:white;opacity:0.3;font-size: 14px;height:364px;overflow-y: scroll;border-radius: 8px;">
+					<ul id="music-list">
+
+					</ul>
+				</div>
+
+			</div>
+			<div class="play-board" id="play-board" style="display:none">
+				<div id="play-part" onclick="musicToggle()" style="width:100%;position:absolute;top:0;left:0;">
+					<img id="needle" class="play-needle pause-needle" src="resource/images/play_needle.png" />
+					<div class="disk-bg"></div>
+					<div class="disk-cover disk-cover-animation" style="display: none">
+						<img class="album" src="resource/images/placeholder_disk_play_song.png" />
+						<img class="disk-border" src="resource/images/play_disc.png" />
+					</div>
+					<div class="disk-cover disk-cover-animation">
+						<img class="album" src="resource/images/placeholder_disk_play_song.png" />
+						<img class="disk-border" src="resource/images/play_disc.png" />
+					</div>
+					<div class="disk-cover disk-cover-animation" style="display: none">
+						<img class="album" src="resource/images/placeholder_disk_play_song.png" />
+						<img class="disk-border" src="resource/images/play_disc.png" />
+					</div>
+					<div class="tools" style="position: absolute;bottom:0;left:0;width:100%;text-align: center;">
+						<i style="font-size: 20px;color:#a1a0a4" class="fa fa-download"></i>
+						<i style="font-size: 20px;margin-left:50px;color:#a1a0a4" class="fa fa-comment"></i>
+					</div>
+				</div>
+				<div id="lyrics-part" onclick="musicToggle()" class="invisible" style="width:100%;position:absolute;overflow:scroll;top:20px;left:0;text-align: center;color:#e6e6e6">
+					<p class="paragraph">歌词</p>
+				</div>
+				<audio id="player"></audio>
+				<div class="footer">
+					<div class="process" id="process">
+						<span id="currentTime">00:00</span>
+
+						<div class="process-bar">
+							<div class="rdy"></div>
+							<div class="cur">
+								<span id="processBtn" class="process-btn c-btn"></span>
+							</div>
+						</div>
+						<span id="totalTime">00:00</span>
+					</div>
+					<div class="control" id="controls">
+						<span class="c-btn loop-btn" onclick="ctx.loop()"></span>
+						<span class="pre c-btn" onclick="ctx.prev()"></span>
+						<span class="play c-btn" onclick="ctx.play()"></span>
+						<span class="pause c-btn" onclick="ctx.pause()" style="display: none"></span>
+						<span class="next c-btn" onclick="ctx.next()"></span>
+						<span class="c-btn list-btn" onclick="ctx.showPlayList()"></span>
+					</div>
+				</div>
+			</div>
+			<div class="play-list" id="playList">
+				<div class="list-title">播放列表（<span id="playListCount">0</span>）</div>
+				<ul class="list-content" id="listContent" style="height:80%">
+				</ul>
+			</div>
+		</div>
+		<script src="js/player.js?v=3"></script>
+		<script src="js/api.js?v=4"></script>
+		<script>
+			$(document).ready(function() {
+				if(ctx.playList.length > 0)
+					boardToggle();
+			});
+
+			let screenHeight = document.body.offsetHeight
+			// 为window绑定resize事件
+			window.onresize = function() {
+				let nowHeight = document.body.offsetHeight
+				if(nowHeight < screenHeight) {
+					ctx.$playList.hide();
+				} else {
+					//					ctx.$playList.show();
+				}
+			}
+		
+		</script>
+	</body>
+
+</html>
